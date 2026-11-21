@@ -12,8 +12,8 @@
     "directory": "public",
     "binding": "ASSETS",
     "not_found_handling": "single-page-application",
-    // API routes go to the Worker; everything else is served as static files.
-    "run_worker_first": ["/api/*", "/auth/*"]
+    // Everything goes through the Worker first so workers.dev can redirect to the canonical host.
+    "run_worker_first": true
   },
   "d1_databases": [
     { "binding": "DB", "database_name": "purse", "database_id": "84b4a6f5-0f0a-43f1-a9b3-0d3bc1e3550a", "migrations_dir": "migrations" }
