@@ -532,7 +532,7 @@ function actionToPrefill(a, source) {
   const cents = (x) => (x == null || Number.isNaN(+x) ? null : Math.round(+x * 100));
   const common = { name: a.name || '', category_id: cat ? cat.id : null, tags: (a.tags || []).map((t) => String(t).toLowerCase().replace(/^#/, '')).slice(0, 8), note: a.note || '', nature: ['fixed', 'everyday', 'spontaneous', 'planned'].includes(a.nature) ? a.nature : null };
   if (a.type === 'add_txn') return { table: 'txns', data: { ...common, amount: cents(a.amount), date: DATE_OK(a.date) && a.date <= today() ? a.date : today(), source } };
-  if (a.type === 'add_plan') return { table: 'plans', data: { ...common, kind: ['once', 'repeat', 'budget', 'tab'].includes(a.kind) ? a.kind : 'once', amount: cents(a.amount), unit: a.unit || null, every: a.every || 1, times: a.times || null, start: DATE_OK(a.start) ? a.start : null, end: DATE_OK(a.end) ? a.end : null, settle_on: DATE_OK(a.settle_on) ? a.settle_on : null } };
+  if (a.type === 'add_plan') return { table: 'plans', data: { ...common, kind: ['once', 'repeat', 'budget', 'tab'].includes(a.kind) ? a.kind : 'once', amount: cents(a.amount), unit: a.unit || null, every: a.every || 1, times: a.times || null, start: DATE_OK(a.start) ? a.start : null, end: DATE_OK(a.end) ? a.end : null, settle_on: DATE_OK(a.settle_on) ? a.settle_on : null, settle_every: DATE_OK(a.settle_on) && ['week', 'month'].includes(a.settle_every) ? a.settle_every : null } };
   if (a.type === 'add_goal') return { table: 'goals', data: { name: a.name || 'Goal', target: Math.abs(cents(a.target ?? a.amount) || 0), target_date: DATE_OK(a.target_date) ? a.target_date : null, note: a.note || '' } };
   return null;
 }

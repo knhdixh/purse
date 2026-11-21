@@ -17,5 +17,5 @@
   "d1_databases": [
     { "binding": "DB", "database_name": "purse", "database_id": "84b4a6f5-0f0a-43f1-a9b3-0d3bc1e3550a", "migrations_dir": "migrations" }
   ],
-  "vars": { "APP_NAME": "purse", "GEMINI_MODEL": "gemini-flash-latest" }
+  "vars": { "APP_NAME": "purse", "GEMINI_MODEL": "gemini-3.5-flash-lite" }
 }

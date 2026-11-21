@@ -65,7 +65,7 @@ npx wrangler secret put GEMINI_API_KEY   # optional; key from https://aistudio.g
 npm run deploy                           # applies migrations, then deploys
 ```
 
-Optional: `GEMINI_MODEL` (var, default `gemini-flash-latest`), `AI_OWNER_USER_IDS` (comma-separated user ids with a higher daily AI limit).
+Optional: `GEMINI_MODEL` (var, default `gemini-3.5-flash-lite`; `GEMINI_THINKING` sets the thinking level, default `minimal`), `AI_OWNER_USER_IDS` (comma-separated user ids with a higher daily AI limit).
 
 ## Limitations
 

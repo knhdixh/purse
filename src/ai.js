@@ -23,7 +23,8 @@ const SCHEMA = {
           times: { type: 'INTEGER' },
           start: { type: 'STRING', description: 'YYYY-MM-DD' },
           end: { type: 'STRING', description: 'YYYY-MM-DD' },
-          settle_on: { type: 'STRING', description: 'YYYY-MM-DD, tab only' },
+          settle_on: { type: 'STRING', description: 'YYYY-MM-DD, tab only: first (or only) payoff date' },
+          settle_every: { type: 'STRING', enum: ['week', 'month'], description: 'tab only: when the debt is paid off repeatedly from settle_on' },
           target: { type: 'NUMBER', description: 'add_goal only' },
           target_date: { type: 'STRING', description: 'add_goal only' },
           note: { type: 'STRING' },
@@ -42,7 +43,7 @@ function systemPrompt({ today, currency, categories, tags }) {
     'Actions: add_txn = money that already moved (date in the past or today). add_plan = money that will move:',
     '  kind once (single future amount, start = its date), repeat (every N unit from start, optional end or times),',
     '  budget (flexible allowance: amount per unit, e.g. groceries 300 per month), tab (a debt accruing amount per unit since start,',
-    '  e.g. unpaid rent 20 per day since a date, optional settle_on when it gets paid). add_goal = savings target.',
+    '  e.g. unpaid rent 20 per day since a date, optional settle_on when it gets paid, settle_every month/week if paid off repeatedly). add_goal = savings target.',
     'Spending amounts are negative, income positive. Use only these category names: ' + categories.join(', ') + '.',
     'Existing tags: ' + (tags.join(', ') || 'none') + '. Prefer existing tags; tags are lowercase single words.',
     'For a receipt image: one add_txn with the total paid (negative), merchant as name, the receipt date (or today if unreadable),',
@@ -57,14 +58,18 @@ export async function askGemini(env, { text, image, mime, context, today, curren
   if (context) parts.push({ text: 'Budget context (JSON, computed by the app):\n' + JSON.stringify(context).slice(0, 40000) });
   if (image) parts.push({ inline_data: { mime_type: mime, data: image } });
   parts.push({ text: text || (image ? 'Read this receipt.' : '') });
-  const model = env.GEMINI_MODEL || 'gemini-flash-latest';
+  const model = env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
   const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: systemPrompt({ today, currency, categories, tags }) }] },
       contents: [{ role: 'user', parts }],
-      generationConfig: { responseMimeType: 'application/json', responseSchema: SCHEMA, temperature: 0.2, maxOutputTokens: 2048 },
+      generationConfig: {
+        responseMimeType: 'application/json', responseSchema: SCHEMA, temperature: 0.2, maxOutputTokens: 4096,
+        // long thinking made answers take minutes and ran out of tokens; extraction needs little of it
+        ...(/gemini-[3-9]/.test(model) ? { thinkingConfig: { thinkingLevel: env.GEMINI_THINKING || 'minimal' } } : {}),
+      },
     }),
   });
   const data = await res.json().catch(() => ({}));
