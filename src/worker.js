@@ -174,6 +174,11 @@ async function handleApi(request, env, url) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    // One canonical host: passkeys and cookies are tied to it.
+    if (env.CANONICAL_HOST && url.hostname.endsWith('.workers.dev')) {
+      url.hostname = env.CANONICAL_HOST;
+      return Response.redirect(url.toString(), ['GET', 'HEAD'].includes(request.method) ? 301 : 308);
+    }
     try {
       if (!['GET', 'HEAD'].includes(request.method)) {
         const origin = request.headers.get('Origin');

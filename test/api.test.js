@@ -94,6 +94,14 @@ test('demo data loads and the projection runs on it', async () => {
   assert.equal(wiped.txns.length, 0);
 });
 
+test('workers.dev redirects to the canonical host', async () => {
+  const env = { CANONICAL_HOST: 'purse.example.com', ASSETS: { fetch: async () => new Response('static') } };
+  const res = await worker.fetch(new Request('https://purse.someone.workers.dev/plan?x=1'), env);
+  assert.equal(res.status, 301);
+  assert.equal(res.headers.get('Location'), 'https://purse.example.com/plan?x=1');
+  assert.equal((await worker.fetch(new Request('https://purse.example.com/'), env)).status, 200);
+});
+
 test('AI endpoint explains when the key is missing', async () => {
   const { call } = setup();
   const r = await call('/api/ai', { method: 'POST', body: { text: 'hi' } });

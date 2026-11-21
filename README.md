@@ -2,7 +2,7 @@
 
 Keyboard-first budgeting that plans the money you **will** spend as carefully as what you **did** spend, then shows where each scenario leaves you.
 
-**Live:** https://purse.sieubadaokhanh04.workers.dev · auto-deploys from `main` via Workers Builds
+**Live:** https://purse.knhdixh.com · auto-deploys from `main` via Workers Builds
 
 <p><img src="docs/screenshot.png" alt="purse home: spare money, scenario comparison chart, due bills" width="760"> <img src="docs/phone.png" alt="purse on a phone" width="200"></p>
 
