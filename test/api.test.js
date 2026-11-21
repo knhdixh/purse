@@ -100,6 +100,9 @@ test('workers.dev redirects to the canonical host', async () => {
   assert.equal(res.status, 301);
   assert.equal(res.headers.get('Location'), 'https://purse.example.com/plan?x=1');
   assert.equal((await worker.fetch(new Request('https://purse.example.com/'), env)).status, 200);
+  const http = await worker.fetch(new Request('http://purse.example.com/goals'), env);
+  assert.equal(http.status, 301);
+  assert.equal(http.headers.get('Location'), 'https://purse.example.com/goals');
 });
 
 test('AI endpoint explains when the key is missing', async () => {

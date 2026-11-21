@@ -175,8 +175,10 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     // One canonical host: passkeys and cookies are tied to it.
-    if (env.CANONICAL_HOST && url.hostname.endsWith('.workers.dev')) {
-      url.hostname = env.CANONICAL_HOST;
+    const insecure = url.protocol === 'http:' && url.hostname !== 'localhost' && url.hostname !== '127.0.0.1';
+    if ((env.CANONICAL_HOST && url.hostname.endsWith('.workers.dev')) || insecure) {
+      if (env.CANONICAL_HOST && url.hostname.endsWith('.workers.dev')) url.hostname = env.CANONICAL_HOST;
+      url.protocol = 'https:';
       return Response.redirect(url.toString(), ['GET', 'HEAD'].includes(request.method) ? 301 : 308);
     }
     try {
