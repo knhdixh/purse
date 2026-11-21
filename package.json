@@ -1,0 +1,20 @@
+{
+  "name": "purse",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler d1 migrations apply DB --local && wrangler dev --local-upstream localhost:8787",
+    "deploy": "wrangler d1 migrations apply DB --remote && wrangler deploy",
+    "test": "node --test test/"
+  },
+  "devDependencies": {
+    "wrangler": "^4"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "workerd@1.20261119.1": true
+  },
+  "dependencies": {
+    "@simplewebauthn/server": "^14.1.0"
+  }
+}
